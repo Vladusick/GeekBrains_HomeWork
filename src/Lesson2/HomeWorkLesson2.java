@@ -3,37 +3,31 @@ package Lesson2;
 public class HomeWorkLesson2 {
     public static void main(String[] args) {
 
-        boolean j = inRage(5, 100);
-        System.out.println(j);
-        nunber(-5);
-        boolean h = plusMinus(-5);
-        System.out.println(h);
-        printLine("test", 3);
-        boolean x = isLeap(2300);
-        System.out.println(x);
+        boolean j = isInRange(5, 10);
+       //  System.out.println(j);
+      //  number(-5);
+     //   boolean h = isNegative(11);
+     //   System.out.println(h);
+       // printLine("test", 3);
+     //   boolean x = isLeap(2400);
+     //   System.out.println(x);
     }
 
     // Задание 1
-    public static boolean inRage(int a, int b) {
+    public static boolean isInRange(int a, int b) {
         int sum = a + b;
-        boolean result;
-        if (sum >= 10 && sum <= 20) result = true;
-        else result = false;
-        return result;
+        return (sum >= 10 && sum <= 20);
     }
 
     // Задание 2
-    public static void nunber(int a) {
+    public static void number(int a) {
         if (a < 0) System.out.println("Число отрицательное");
         else System.out.println("Число положительное");
     }
 
     // Задание 3
-    public static boolean plusMinus(int a) {
-        boolean result;
-        if (a < 0) result = false;
-        else result = true;
-        return result;
+    public static boolean isNegative(int a) {
+        return a < 0;
     }
 
     // Задание 4
@@ -45,9 +39,7 @@ public class HomeWorkLesson2 {
 
     // Задание 5
     public static boolean isLeap(int year) {
-        boolean result = false;
-        if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) result = true;
-        return result;
+        return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
 
     }
 }
