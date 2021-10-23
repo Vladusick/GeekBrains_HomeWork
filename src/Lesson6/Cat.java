@@ -9,13 +9,13 @@ public class Cat extends Animal {
     @Override
     public void run(int getStaminaRun) {
         if (getStaminaRun >= 200) {
-            System.out.println(name + " не пробежал из за ограничения 200 м");
+            System.out.println(getName() + " не пробежал из за ограничения 200 м");
         } else super.run(getStaminaRun);
     }
 
     @Override
     public void swim(int getStaminaSwim) {
-        System.out.println(name + " не умеет плавать");
+        System.out.println(getName() + " не умеет плавать");
     }
 
 }

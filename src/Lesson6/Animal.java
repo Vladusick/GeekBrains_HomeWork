@@ -1,11 +1,11 @@
 package Lesson6;
 
 public class Animal {
-    protected String name;
-    protected String color;
-    protected int age;
-    protected int staminaRun;
-    protected int staminaSwim;
+    private String name;
+    private String color;
+    private int age;
+    private int staminaRun;
+    private int staminaSwim;
 
     public Animal() {
     }
@@ -26,14 +26,17 @@ public class Animal {
         System.out.println(name + " проплыл " + staminaSwim + " метров");
     }
 
-    public int getStaminaRun() {
-        return staminaRun;
+     public int getStaminaRun() {
+       return staminaRun;
     }
 
-    public int getStaminaSwim() {
+     public int getStaminaSwim() {
         return staminaSwim;
     }
 
+    public String getName() {
+        return name;
+    }
 }
 
 

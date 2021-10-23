@@ -9,14 +9,14 @@ public class Dog extends Animal {
     @Override
     public void run(int getStaminaRun) {
         if (getStaminaRun >= 500) {
-            System.out.println(name + " не пробежал из за ограничения 500 м");
+            System.out.println(getName() + " не пробежал из за ограничения 500 м");
         } else super.run(getStaminaRun);
     }
 
     @Override
     public void swim(int getStaminaSwim) {
         if (getStaminaSwim >= 10) {
-            System.out.println(name + " не проплыл из за ограничения 10 м");
+            System.out.println(getName() + " не проплыл из за ограничения 10 м");
         } else super.swim(getStaminaSwim);
     }
 }
