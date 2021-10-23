@@ -19,6 +19,7 @@ public class Dog extends Animal {
             System.out.println(getName() + " не проплыл из за ограничения 10 м");
         } else super.swim(getStaminaSwim);
     }
+
 }
 
 
