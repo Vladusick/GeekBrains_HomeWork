@@ -17,7 +17,7 @@ public class Plate {
     }
 
     public void decreaseFood(int foodCount) {
-        this.food -= foodCount;
+        this.food = food - foodCount;
     }
 
     public void info() {

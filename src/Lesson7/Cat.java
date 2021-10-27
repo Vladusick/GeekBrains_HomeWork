@@ -4,10 +4,12 @@ public class Cat {
 
     private final String name;
     private final int appetite;
+    private boolean satiety;
 
-    public Cat(String name, int appetite) {
+    public Cat(String name, int appetite, boolean satiety) {
         this.name = name;
         this.appetite = appetite;
+        this.satiety = satiety;
     }
 
     public int getAppetite() {
@@ -19,8 +21,12 @@ public class Cat {
     }
 
     public void eat(Plate plate) {
-        System.out.println("Cat has eaten!");
-              plate.decreaseFood(appetite);
+        if (plate.getFood() >= getAppetite()) {
+            System.out.println(name + " Поела!");
+            plate.decreaseFood(appetite);
+            satiety = true;
+            System.out.println(name + " Сытость = " + satiety);
+        } else System.out.println(name + " Еды мало, Cытость = " + satiety);
 
 
     }
