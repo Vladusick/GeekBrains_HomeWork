@@ -26,7 +26,7 @@ public class Cat {
             plate.decreaseFood(appetite);
             satiety = true;
             System.out.println(name + " Сытость = " + satiety);
-        } else System.out.println(name + " Еды мало, Cытость = " + satiety);
+        } else System.out.println(name + " Не поел, еды мало, Cытость = " + satiety);
 
 
     }

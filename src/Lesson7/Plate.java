@@ -21,6 +21,13 @@ public class Plate {
     }
 
     public void info() {
-        System.out.println("plate: " + food);
+        System.out.println("Еда в тарелке = " + food);
     }
+
+    public void addFood(int number) {
+        this.food = food + number;
+        System.out.println("Еда в тарелке добавилась на " + number);
+
+    }
+
 }
