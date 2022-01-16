@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GeekBrains_HomeWork.iml" filepath="$PROJECT_DIR$/GeekBrains_HomeWork.iml" />
-      <module fileurl="file://$PROJECT_DIR$/JavaChatFX/JavaChatFX.iml" filepath="$PROJECT_DIR$/JavaChatFX/JavaChatFX.iml" />
       <module fileurl="file://$PROJECT_DIR$/JavaFX/JavaFXChat.iml" filepath="$PROJECT_DIR$/JavaFX/JavaFXChat.iml" />
       <module fileurl="file://$PROJECT_DIR$/JavaFXChat2/JavaFXChat2.iml" filepath="$PROJECT_DIR$/JavaFXChat2/JavaFXChat2.iml" />
     </modules>
