@@ -1,10 +1,10 @@
-package com.example.javachatfx;
+package q2Lesson6.client;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-public class HelloController {
+public class ClientController {
 
     @FXML private TextArea textArea;
     @FXML private TextField textField;
