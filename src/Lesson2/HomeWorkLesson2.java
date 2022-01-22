@@ -8,7 +8,7 @@ public class HomeWorkLesson2 {
       //  number(-5);
      //   boolean h = isNegative(11);
      //   System.out.println(h);
-       // printLine("test", 3);
+       // printLine("MyThreadPriority", 3);
      //   boolean x = isLeap(2400);
      //   System.out.println(x);
     }

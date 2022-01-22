@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.function.Consumer;
 
 public class ClientController {
@@ -23,23 +25,45 @@ public class ClientController {
     private ClientChat application;
 
     public void sendMessage() {
-        String message = textField.getText();
+        String message = textField.getText().trim();
 
-        appendMessageToChat(message);
+        if (message.isEmpty()) {
+            textField.clear();
+            return;
+        }
+
+        String sender = null;
+        if (!userList.getSelectionModel().isEmpty()) {
+            sender = userList.getSelectionModel().getSelectedItem();
+        }
+
 
         try {
+            message = sender != null ? String.join(":", sender, message) : message;
             network.sendMessage(message);
         } catch (IOException e) {
             application.showErrorDialog("Ошибка передачи данных по сети");
         }
+
+        appendMessageToChat("Я", message);
+
     }
 
-    private void appendMessageToChat(String message) {
-        if (!message.isEmpty()) {
-            textArea.appendText(message);
+    private void appendMessageToChat(String sender, String  message) {
+        textArea.appendText(DateFormat.getDateInstance().format(new Date()));
+        textArea.appendText(System.lineSeparator());
+
+        if (sender != null) {
+            textArea.appendText(sender + ":");
             textArea.appendText(System.lineSeparator());
-            textField.clear();
         }
+
+        textArea.appendText(message);
+        textArea.appendText(System.lineSeparator());
+        textArea.appendText(System.lineSeparator());
+        textField.setFocusTraversable(true);
+        textField.clear();
+
     }
 
     public void setNetwork(Network network) {
@@ -51,7 +75,7 @@ public class ClientController {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        appendMessageToChat(message);
+                        appendMessageToChat("Server", message);
                     }
                 });
             }
