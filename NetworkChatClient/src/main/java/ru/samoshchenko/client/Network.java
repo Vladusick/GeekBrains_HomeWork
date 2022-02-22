@@ -1,4 +1,4 @@
-package q2Lesson6.client;
+package ru.samoshchenko.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

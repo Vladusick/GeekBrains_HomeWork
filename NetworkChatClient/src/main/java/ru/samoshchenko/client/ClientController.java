@@ -1,7 +1,6 @@
-package q2Lesson6.client;
+package ru.samoshchenko.client;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 

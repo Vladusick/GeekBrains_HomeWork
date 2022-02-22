@@ -1,4 +1,4 @@
-package q2Lesson6.client;
+package ru.samoshchenko.client;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -6,14 +6,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class ClientChat extends Application {
 
@@ -21,11 +18,11 @@ public class ClientChat extends Application {
     public static final int SERVER_PORT = 8189;
     public static final String CONNECTION_ERROR_MESSAGE = "Невозможно установить сетевое соединение";
 
-    private Stage stage;
+    private Stage primaryStage;
 
     @Override
     public void start(Stage stage) throws IOException {
-        this.stage = stage;
+        this.primaryStage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("chat-template.fxml"));
@@ -33,19 +30,30 @@ public class ClientChat extends Application {
         Parent load = fxmlLoader.load();
         Scene scene = new Scene(load);
 
-        this.stage.setTitle("Онлайн чат GeekBrains");
-        this.stage.setScene(scene);
+        this.primaryStage.setTitle("Онлайн чат");
+        this.primaryStage.setScene(scene);
 
         ClientController controller = fxmlLoader.getController();
         controller.userList.getItems().addAll("user1", "user2");
 
         stage.show();
+
         connectToServer(controller);
+
+        FXMLLoader authLoader = new FXMLLoader();
+        authLoader.setLocation(getClass().getResource("authDialog.fxml"));
+        AnchorPane authDialogPanel = authLoader.load();
+
+        Stage authStage = new Stage();
+        authStage.initOwner(primaryStage);
+        authStage.setAlwaysOnTop(true);
+
+        authStage.setScene(new Scene(authDialogPanel));
+        authStage.show();
 
     }
 
     private void connectToServer(ClientController clientController) {
-
         Network network = new Network();
         boolean result = network.connect();
 
@@ -59,7 +67,7 @@ public class ClientChat extends Application {
         clientController.setNetwork(network);
         clientController.setApplication(this);
 
-        this.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent windowEvent) {
                 network.close();
