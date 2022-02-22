@@ -7,8 +7,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ru.samoshchenko.client.controllers.AuthController;
 
 import java.io.IOException;
 
@@ -19,6 +21,7 @@ public class ClientChat extends Application {
     public static final String CONNECTION_ERROR_MESSAGE = "Невозможно установить сетевое соединение";
 
     private Stage primaryStage;
+    private Network network;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -46,15 +49,19 @@ public class ClientChat extends Application {
 
         Stage authStage = new Stage();
         authStage.initOwner(primaryStage);
-        authStage.setAlwaysOnTop(true);
+        authStage.initModality(Modality.WINDOW_MODAL);
 
         authStage.setScene(new Scene(authDialogPanel));
+        AuthController authController = authLoader.getController();
+        authController.setClientChat(this);
+        authController.setNetwork(network);
+
         authStage.show();
 
     }
 
     private void connectToServer(ClientController clientController) {
-        Network network = new Network();
+        network = new Network();
         boolean result = network.connect();
 
         if (!result) {
