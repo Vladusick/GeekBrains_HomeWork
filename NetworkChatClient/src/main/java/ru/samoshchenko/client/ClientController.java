@@ -20,7 +20,6 @@ public class ClientController {
     @FXML
     public ListView<String> userList;
 
-    private Network network;
     private ClientChat application;
 
     public void sendMessage() {
@@ -39,7 +38,7 @@ public class ClientController {
 
         try {
             message = sender != null ? String.join(":", sender, message) : message;
-            network.sendMessage(message);
+            Network.getInstance().sendMessage(message);
         } catch (IOException e) {
             application.showErrorDialog("Ошибка передачи данных по сети");
         }
@@ -65,10 +64,13 @@ public class ClientController {
 
     }
 
-    public void setNetwork(Network network) {
-        this.network = network;
 
-        network.waitMassages(new Consumer<String>() {
+    public void setApplication(ClientChat application) {
+        this.application = application;
+    }
+
+    public void initializeMessageHandler() {
+        Network.getInstance().waitMassages(new Consumer<String>() {
             @Override
             public void accept(String message) {
                 Platform.runLater(new Runnable() {
@@ -80,11 +82,6 @@ public class ClientController {
             }
         });
     }
-
-    public void setApplication(ClientChat application) {
-        this.application = application;
-    }
-
 }
 
 
