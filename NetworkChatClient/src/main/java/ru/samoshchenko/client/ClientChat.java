@@ -11,83 +11,78 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.samoshchenko.client.controllers.AuthController;
+import ru.samoshchenko.client.controllers.ClientController;
+import ru.samoshchenko.client.model.Network;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 public class ClientChat extends Application {
 
+    public static ClientChat INSTANCE;
+
     public static final String SERVER_HOST = "localhost";
     public static final int SERVER_PORT = 8189;
-    public static final String CONNECTION_ERROR_MESSAGE = "Невозможно установить сетевое соединение";
 
+    private FXMLLoader chatWindowLoader;
+    private FXMLLoader authLoader;
     private Stage primaryStage;
-
     private Stage authStage;
 
     @Override
     public void start(Stage stage) throws IOException {
         this.primaryStage = stage;
 
-        ClientController controller = createChatDialog(stage);
-        createAuthDialog();
+        initViews();
+        getChatStage().show();
+        getAuthStage().show();
 
-        controller.initializeMessageHandler();
+        getAuthController().initializeMessageHandler();
     }
 
-    private void createAuthDialog() throws IOException {
-        FXMLLoader authLoader = new FXMLLoader();
-        authLoader.setLocation(getClass().getResource("authDialog.fxml"));
-        AnchorPane authDialogPanel = authLoader.load();
+    @Override
+    public void init() throws Exception {
+        INSTANCE = this;
+    }
 
+    public void initViews() throws IOException {
+        initChatWindow();
+        initAuthDialog();
+    }
+
+    private void initAuthDialog() throws IOException {
+        authLoader = new FXMLLoader();
+        authLoader.setLocation(getClass().getResource("authDialog.fxml"));
+
+        Parent authDialogPanel = authLoader.load();
         authStage = new Stage();
         authStage.initOwner(primaryStage);
         authStage.initModality(Modality.WINDOW_MODAL);
-
         authStage.setScene(new Scene(authDialogPanel));
-        AuthController authController = authLoader.getController();
-        authController.setClientChat(this);
-        authController.initializeMessageHandler();
-        authStage.showAndWait();
     }
 
-    private ClientController createChatDialog(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("chat-template.fxml"));
+    private void initChatWindow() throws IOException {
+        chatWindowLoader = new FXMLLoader();
+        chatWindowLoader.setLocation(getClass().getResource("chat-template.fxml"));
 
-        Parent load = fxmlLoader.load();
-        Scene scene = new Scene(load);
-
-        this.primaryStage.setTitle("Онлайн чат");
-        this.primaryStage.setScene(scene);
-
-        ClientController controller = fxmlLoader.getController();
-        controller.userList.getItems().addAll("username1", "username2", "username3");
-
-        stage.show();
-
-        connectToServer(controller);
-        return controller;
+        Parent root = chatWindowLoader.load();
+        this.primaryStage.setScene(new Scene(root));
     }
 
-    private void connectToServer(ClientController clientController) {
-        boolean result = Network.getInstance().connect();
+    private AuthController getAuthController() {
+        return authLoader.getController();
+    }
 
-        if (!result) {
-            String errorMessage = CONNECTION_ERROR_MESSAGE;
-            System.err.println(errorMessage);
-            showErrorDialog(errorMessage);
-            return;
-        }
+    private ClientController getChatController() {
+        return chatWindowLoader.getController();
+    }
 
 
-        clientController.setApplication(this);
-
-        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent windowEvent) {
-                Network.getInstance().close();
-            }
-        });
+    public void switchToMainChatWindow(String userName) {
+        getChatStage().setTitle(userName);
+        getAuthController().close();
+        getAuthStage().close();
+        getChatController().initializeMessageHandler();
     }
 
     private void setOnCloseRequest() {
@@ -101,16 +96,17 @@ public class ClientChat extends Application {
         alert.showAndWait();
     }
 
-    public Stage getAuthStage() {
-        return authStage;
-    }
-
-
     public static void main(String[] args) {
         Application.launch();
+    }
+
+    public Stage getAuthStage() {
+        return authStage;
     }
 
     public Stage getChatStage() {
         return this.primaryStage;
     }
+
+
 }

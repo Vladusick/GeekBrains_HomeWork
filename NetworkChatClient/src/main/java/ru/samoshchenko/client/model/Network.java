@@ -1,12 +1,17 @@
-package ru.samoshchenko.client;
+package ru.samoshchenko.client.model;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.http.WebSocket;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 public class Network {
+
+    private List<ReadMessageListener> listeners = new CopyOnWriteArrayList<>();
 
     public static final String SERVER_HOST = "localhost";
     public static final int SERVER_PORT = 8189;
@@ -18,6 +23,8 @@ public class Network {
     private DataOutputStream socketOutput;
 
     private static Network INSTANCE;
+    private Thread readMessageProcess;
+    private boolean connected;
 
     public static Network getInstance() {
         if (INSTANCE == null) {
@@ -40,6 +47,8 @@ public class Network {
             this.socket = new Socket(this.host, this.port);
             this.socketInput = new DataInputStream(socket.getInputStream());
             this.socketOutput = new DataOutputStream(socket.getOutputStream());
+            readMessageProcess = startReadMessageProcess();
+            connected = true;
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,7 +66,7 @@ public class Network {
         }
     }
 
-    public void waitMassages(Consumer<String> messageHandler) {
+    public Thread startReadMessageProcess() {
         Thread thread = new Thread(() -> {
             while (true) {
                 try {
@@ -65,24 +74,44 @@ public class Network {
                         return;
                     }
                     String message = socketInput.readUTF();
-                    messageHandler.accept(message);
+
+                    for (ReadMessageListener messageListener : listeners) {
+                        messageListener.processReceivedMessage(message);
+                    }
+
                 } catch (IOException e) {
                     System.err.println("Не удалось прочитать сообщение от сервера");
+                    close();
                     break;
                 }
             }
         });
         thread.setDaemon(true);
         thread.start();
+        return thread;
+    }
 
+    public ReadMessageListener addReadMessageListener(ReadMessageListener listener) {
+        listeners.add(listener);
+        return listener;
+    }
+
+    public void removeReadMessageListener(ReadMessageListener listener) {
+        listeners.remove(listener);
     }
 
     public void close() {
         try {
+            connected = false;
+            readMessageProcess.interrupt();
             this.socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }
 

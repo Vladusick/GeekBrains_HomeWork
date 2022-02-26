@@ -6,9 +6,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import ru.samoshchenko.client.ClientChat;
-import ru.samoshchenko.client.Network;
+import ru.samoshchenko.client.dialogs.Dialogs;
+import ru.samoshchenko.client.model.Network;
+import ru.samoshchenko.client.model.ReadMessageListener;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -25,7 +26,7 @@ public class AuthController {
     @FXML
     private Button authButton;
 
-    private ClientChat clientChat;
+    private ReadMessageListener readMessageListener;
 
     @FXML
     public void executeAuth(ActionEvent actionEvent) {
@@ -33,42 +34,53 @@ public class AuthController {
         String password = passwordField.getText();
 
         if (login == null || login.isBlank() || password == null || password.isBlank()) {
-            clientChat.showErrorDialog("Логин и пароль должны быть указаны");
+            Dialogs.AuthError.EMPTY_CREDENTIALS.show();
             return;
         }
 
-        String authCommandMassage = String.format("%s %s %s", AUTH_COMMAND,  login, password);
+        String authCommandMassage = String.format("%s %s %s", AUTH_COMMAND, login, password);
+        if (!connectToServer()) {
+            Dialogs.NetworkError.SERVER_CONNECT.show();
+        }
 
         try {
             Network.getInstance().sendMessage(authCommandMassage);
         } catch (IOException e) {
-            clientChat.showErrorDialog("Ошибка передачи данных по сети");
+            Dialogs.NetworkError.SEND_MESSAGE.show();
             e.printStackTrace();
         }
     }
 
-    public void setClientChat(ClientChat clientChat) {
-        this.clientChat = clientChat;
+    private boolean connectToServer() {
+        Network network = Network.getInstance();
+        return network.isConnected() || network.connect();
     }
 
     public void initializeMessageHandler() {
-        Network.getInstance().waitMassages(new Consumer<String>() {
+        readMessageListener = getNetwork().addReadMessageListener(new ReadMessageListener() {
             @Override
-            public void accept(String message) {
+            public void processReceivedMessage(String message) {
                 if (message.startsWith(AUTH_OK_COMMAND)) {
                     String[] parts = message.split(" ");
                     String userName = parts[1];
-                    Thread.currentThread().interrupt();
                     Platform.runLater(() -> {
-                        clientChat.getChatStage().setTitle(userName);
-                        clientChat.getAuthStage().close();
+                        ClientChat.INSTANCE.switchToMainChatWindow(userName);
                     });
                 } else {
                     Platform.runLater(() -> {
-                        clientChat.showErrorDialog("Пользователя с таким логином и паролем не существует");
+                        Dialogs.AuthError.INVALID_CREDENTIALS.show();
                     });
                 }
             }
+
         });
+    }
+
+    public void close() {
+        getNetwork().removeReadMessageListener(readMessageListener);
+    }
+
+    private Network getNetwork() {
+        return Network.getInstance();
     }
 }

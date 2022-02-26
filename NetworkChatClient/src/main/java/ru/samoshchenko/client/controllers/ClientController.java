@@ -1,15 +1,26 @@
-package ru.samoshchenko.client;
+package ru.samoshchenko.client.controllers;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import ru.samoshchenko.client.ClientChat;
+import ru.samoshchenko.client.model.Network;
+import ru.samoshchenko.client.model.ReadMessageListener;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ClientController {
+
+    private static final List<String> USER_TEST_DATA = List.of(
+            "username1",
+            "username2",
+            "username3"
+    );
 
     @FXML
     private TextArea textArea;
@@ -21,6 +32,11 @@ public class ClientController {
     public ListView<String> userList;
 
     private ClientChat application;
+
+    @FXML
+    public void initialize() {
+        userList.setItems(FXCollections.observableList(USER_TEST_DATA));
+    }
 
     public void sendMessage() {
         String message = textField.getText().trim();
@@ -70,16 +86,11 @@ public class ClientController {
     }
 
     public void initializeMessageHandler() {
-        Network.getInstance().waitMassages(new Consumer<String>() {
+        Network.getInstance().addReadMessageListener(new ReadMessageListener() {
             @Override
-            public void accept(String message) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        appendMessageToChat("Server", message);
-                    }
-                });
-            }
+            public void processReceivedMessage(String message) {
+                    appendMessageToChat("Server", message);
+                }
         });
     }
 }
