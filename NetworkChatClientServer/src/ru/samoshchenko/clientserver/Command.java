@@ -3,6 +3,7 @@ package ru.samoshchenko.clientserver;
 import ru.samoshchenko.clientserver.commands.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Command implements Serializable {
 
@@ -51,6 +52,12 @@ public class Command implements Serializable {
         return command;
     }
 
+    public static Command updateUserListCommand(List<String> users) {
+        Command command = new Command();
+        command.type = CommandType.UPDATE_USER_LIST;
+        command.data = new UpdateUserListCommandData(users);
+        return command;
+    }
 
     public Object getData() {
         return data;

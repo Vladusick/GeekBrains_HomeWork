@@ -64,18 +64,30 @@ public class MyServer {
         return false;
     }
 
-    public synchronized void subscribe(ClientHandler clientHandler) {
-        this.clients.add(clientHandler);
+    public synchronized void subscribe(ClientHandler clientHandler) throws IOException {
+        clients.add(clientHandler);
+        notifyClientUserListUpdated();
     }
 
-    public synchronized void unsubscribe(ClientHandler clientHandler) {
-        this.clients.remove(clientHandler);
+    public synchronized void unsubscribe(ClientHandler clientHandler) throws IOException {
+        clients.remove(clientHandler);
+        notifyClientUserListUpdated();
     }
 
     public AuthService getAuthService() {
         return authService;
     }
 
+    private void notifyClientUserListUpdated() throws IOException {
+        List<String> userListOnline = new ArrayList<>();
+
+        for (ClientHandler client : clients) {
+            userListOnline.add(client.getUsername());
+        }
+        for (ClientHandler client : clients) {
+            client.sendCommand(Command.updateUserListCommand(userListOnline));
+        }
+    }
 }
 
 

@@ -1,5 +1,6 @@
 package ru.samoshchenko.client.controllers;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -9,6 +10,7 @@ import ru.samoshchenko.client.model.ReadCommandListener;
 import ru.samoshchenko.clientserver.Command;
 import ru.samoshchenko.clientserver.CommandType;
 import ru.samoshchenko.clientserver.commands.ClientMessageCommandData;
+import ru.samoshchenko.clientserver.commands.UpdateUserListCommandData;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -16,12 +18,6 @@ import java.util.Date;
 import java.util.List;
 
 public class ClientController {
-
-    private static final List<String> USER_TEST_DATA = List.of(
-            "username1",
-            "username2",
-            "username3"
-    );
 
     @FXML
     private TextArea textArea;
@@ -33,11 +29,6 @@ public class ClientController {
     public ListView<String> userList;
 
     private ClientChat application;
-
-    @FXML
-    public void initialize() {
-        userList.setItems(FXCollections.observableList(USER_TEST_DATA));
-    }
 
     public void sendMessage() {
         String message = textField.getText().trim();
@@ -97,6 +88,14 @@ public class ClientController {
                 if (command.getType() == CommandType.CLIENT_MESSAGE) {
                     ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
                     appendMessageToChat(data.getSender(), data.getMessage());
+                } else if (command.getType() == CommandType.UPDATE_USER_LIST) {
+                    UpdateUserListCommandData data = (UpdateUserListCommandData) command.getData();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            userList.setItems(FXCollections.observableList(data.getUsers()));
+                        }
+                    });
                 }
             }
         });
