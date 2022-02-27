@@ -6,6 +6,7 @@ public enum CommandType {
     ERROR,
     PUBLIC_MESSAGE,
     PRIVATE_MESSAGE,
+    CLIENT_MESSAGE,
     END
 
 

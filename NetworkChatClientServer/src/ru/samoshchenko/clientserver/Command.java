@@ -44,6 +44,14 @@ public class Command implements Serializable {
         return command;
     }
 
+    public static Command clientMessageCommand(String sender, String message) {
+        Command command = new Command();
+        command.type = CommandType.CLIENT_MESSAGE;
+        command.data = new ClientMessageCommandData(sender,message);
+        return command;
+    }
+
+
     public Object getData() {
         return data;
     }

@@ -1,4 +1,6 @@
 C:\Users\Vladislav\IdeaProjects\GeekBrains_HomeWork\NetworkChatClient\src\main\java\ru\samoshchenko\client\ClientChat.java
+C:\Users\Vladislav\IdeaProjects\GeekBrains_HomeWork\NetworkChatClient\src\main\java\ru\samoshchenko\client\model\Network.java
 C:\Users\Vladislav\IdeaProjects\GeekBrains_HomeWork\NetworkChatClient\src\main\java\ru\samoshchenko\client\controllers\AuthController.java
-C:\Users\Vladislav\IdeaProjects\GeekBrains_HomeWork\NetworkChatClient\src\main\java\ru\samoshchenko\client\ClientController.java
-C:\Users\Vladislav\IdeaProjects\GeekBrains_HomeWork\NetworkChatClient\src\main\java\ru\samoshchenko\client\Network.java
+C:\Users\Vladislav\IdeaProjects\GeekBrains_HomeWork\NetworkChatClient\src\main\java\ru\samoshchenko\client\controllers\ClientController.java
+C:\Users\Vladislav\IdeaProjects\GeekBrains_HomeWork\NetworkChatClient\src\main\java\ru\samoshchenko\client\dialogs\Dialogs.java
+C:\Users\Vladislav\IdeaProjects\GeekBrains_HomeWork\NetworkChatClient\src\main\java\ru\samoshchenko\client\model\ReadCommandListener.java

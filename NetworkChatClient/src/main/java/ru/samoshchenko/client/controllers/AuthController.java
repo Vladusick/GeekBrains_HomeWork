@@ -9,15 +9,18 @@ import javafx.scene.control.TextField;
 import ru.samoshchenko.client.ClientChat;
 import ru.samoshchenko.client.dialogs.Dialogs;
 import ru.samoshchenko.client.model.Network;
-import ru.samoshchenko.client.model.ReadMessageListener;
+import ru.samoshchenko.client.model.ReadCommandListener;
+import ru.samoshchenko.clientserver.Command;
+import ru.samoshchenko.clientserver.CommandType;
+import ru.samoshchenko.clientserver.commands.AuthOkCommandData;
+import ru.samoshchenko.clientserver.commands.ErrorCommandData;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public class AuthController {
-    public static final String AUTH_COMMAND = "/auth";
-    public static final String AUTH_OK_COMMAND = "/authOk";
 
+   // public static final String AUTH_COMMAND = "/auth";
+   //  public static final String AUTH_OK_COMMAND = "/authOK";
 
     @FXML
     private TextField loginField;
@@ -26,7 +29,7 @@ public class AuthController {
     @FXML
     private Button authButton;
 
-    private ReadMessageListener readMessageListener;
+    private ReadCommandListener readCommandListener;
 
     @FXML
     public void executeAuth(ActionEvent actionEvent) {
@@ -38,13 +41,12 @@ public class AuthController {
             return;
         }
 
-        String authCommandMassage = String.format("%s %s %s", AUTH_COMMAND, login, password);
         if (!connectToServer()) {
             Dialogs.NetworkError.SERVER_CONNECT.show();
         }
 
         try {
-            Network.getInstance().sendMessage(authCommandMassage);
+            Network.getInstance().sendAuthMessage(login, password);
         } catch (IOException e) {
             Dialogs.NetworkError.SEND_MESSAGE.show();
             e.printStackTrace();
@@ -57,18 +59,20 @@ public class AuthController {
     }
 
     public void initializeMessageHandler() {
-        readMessageListener = getNetwork().addReadMessageListener(new ReadMessageListener() {
+        readCommandListener = getNetwork().addReadMessageListener(new ReadCommandListener() {
             @Override
-            public void processReceivedMessage(String message) {
-                if (message.startsWith(AUTH_OK_COMMAND)) {
-                    String[] parts = message.split(" ");
-                    String userName = parts[1];
+            public void processReceivedCommand(Command command) {
+                if (command.getType() == CommandType.AUTH_OK) {
+                    AuthOkCommandData data = (AuthOkCommandData) command.getData();
+                    String userName = data.getUsername();
                     Platform.runLater(() -> {
                         ClientChat.INSTANCE.switchToMainChatWindow(userName);
                     });
-                } else {
+                } else if (command.getType() == CommandType.ERROR) {
+                    ErrorCommandData data = (ErrorCommandData) command.getData();
+                    String errorMessage = data.getErrorMessage();
                     Platform.runLater(() -> {
-                        Dialogs.AuthError.INVALID_CREDENTIALS.show();
+                        Dialogs.AuthError.INVALID_CREDENTIALS.show(errorMessage);
                     });
                 }
             }
@@ -77,7 +81,7 @@ public class AuthController {
     }
 
     public void close() {
-        getNetwork().removeReadMessageListener(readMessageListener);
+        getNetwork().removeReadMessageListener(readCommandListener);
     }
 
     private Network getNetwork() {

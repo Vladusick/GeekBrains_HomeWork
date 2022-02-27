@@ -1,18 +1,19 @@
 package ru.samoshchenko.client.controllers;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import ru.samoshchenko.client.ClientChat;
 import ru.samoshchenko.client.model.Network;
-import ru.samoshchenko.client.model.ReadMessageListener;
+import ru.samoshchenko.client.model.ReadCommandListener;
+import ru.samoshchenko.clientserver.Command;
+import ru.samoshchenko.clientserver.CommandType;
+import ru.samoshchenko.clientserver.commands.ClientMessageCommandData;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ClientController {
 
@@ -53,8 +54,12 @@ public class ClientController {
 
 
         try {
-            message = sender != null ? String.join(":", sender, message) : message;
-            Network.getInstance().sendMessage(message);
+            if (sender != null) {
+                Network.getInstance().sendPrivateMessage(sender, message);
+            } else {
+                Network.getInstance().sendMessage(message);
+            }
+
         } catch (IOException e) {
             application.showErrorDialog("Ошибка передачи данных по сети");
         }
@@ -86,11 +91,14 @@ public class ClientController {
     }
 
     public void initializeMessageHandler() {
-        Network.getInstance().addReadMessageListener(new ReadMessageListener() {
+        Network.getInstance().addReadMessageListener(new ReadCommandListener() {
             @Override
-            public void processReceivedMessage(String message) {
-                    appendMessageToChat("Server", message);
+            public void processReceivedCommand(Command command) {
+                if (command.getType() == CommandType.CLIENT_MESSAGE) {
+                    ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
+                    appendMessageToChat(data.getSender(), data.getMessage());
                 }
+            }
         });
     }
 }
