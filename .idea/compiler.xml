@@ -6,14 +6,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Lesson2_SQL" />
         <module name="NetworkChatClient" />
+        <module name="NetworkChatServer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="JavaChatFX" target="16" />
       <module name="JavaFXChat" target="16" />
       <module name="JavaFXChat2" target="16" />
+      <module name="Lesson2_SQL" target="16" />
       <module name="NetworkChatClient" target="11" />
+      <module name="NetworkChatServer" target="13" />
     </bytecodeTargetLevel>
   </component>
 </project>
