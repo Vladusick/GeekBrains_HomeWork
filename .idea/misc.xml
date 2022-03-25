@@ -6,6 +6,8 @@
         <option value="$PROJECT_DIR$/JavaFX/pom.xml" />
         <option value="$PROJECT_DIR$/JavaChatFX/pom.xml" />
         <option value="$PROJECT_DIR$/NetworkChatClient/pom.xml" />
+        <option value="$PROJECT_DIR$/Lesson2_SQL/pom.xml" />
+        <option value="$PROJECT_DIR$/NetworkChatServer/pom.xml" />
       </list>
     </option>
   </component>

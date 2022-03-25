@@ -2,6 +2,8 @@ package ru.samoshchenko.server.chat;
 
 import ru.samoshchenko.clientserver.Command;
 import ru.samoshchenko.server.chat.auth.AuthService;
+import ru.samoshchenko.server.chat.auth.IAuthService;
+import ru.samoshchenko.server.chat.auth.PersistentDbAuthService;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,13 +16,18 @@ import java.util.List;
 public class MyServer {
 
     private final List<ClientHandler> clients = new ArrayList<>();
-    private AuthService authService;
+    private IAuthService authService;
+
+    public IAuthService getAuthService() {
+        return authService;
+    }
 
 
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server has been started");
-            authService = new AuthService();
+            authService = createAuthService();
+            authService.start();
             while (true) {
                 waitAndProcessClientConnection(serverSocket);
             }
@@ -30,6 +37,13 @@ public class MyServer {
             e.printStackTrace();
         }
     }
+
+    private IAuthService createAuthService() {
+        // переключение старой и новой реализации
+        // return new AuthService();
+        return new PersistentDbAuthService();
+    }
+
 
     private void waitAndProcessClientConnection(ServerSocket serverSocket) throws IOException {
         System.out.println("Waiting for new client connection");
@@ -74,11 +88,9 @@ public class MyServer {
         notifyClientUserListUpdated();
     }
 
-    public AuthService getAuthService() {
-        return authService;
-    }
 
-    private void notifyClientUserListUpdated() throws IOException {
+
+    public void notifyClientUserListUpdated() throws IOException {
         List<String> userListOnline = new ArrayList<>();
 
         for (ClientHandler client : clients) {
