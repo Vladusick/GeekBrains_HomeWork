@@ -22,6 +22,8 @@ public class Network {
 
     private static Network INSTANCE;
     private Thread readMessageProcess;
+    private String currentUserName;
+
     private boolean connected;
 
     public static Network getInstance() {
@@ -132,6 +134,14 @@ public class Network {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getCurrentUserName() {
+        return currentUserName;
+    }
+
+    public void setCurrentUserName(String currentUserName) {
+        this.currentUserName = currentUserName;
     }
 
     public boolean isConnected() {
