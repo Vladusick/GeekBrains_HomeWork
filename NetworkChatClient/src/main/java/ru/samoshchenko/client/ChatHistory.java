@@ -45,4 +45,36 @@ public class ChatHistory implements AutoCloseable {
             printWriter.close();
         }
     }
+
+    public String loadLastRows(int rowsNumber) {
+        try (RandomAccessFile raf = new RandomAccessFile(historyFile, "r")) {
+            long pointer;
+            int count = 0;
+            for (pointer = raf.length() - 1; pointer > 0; pointer--) {
+                raf.seek(pointer);
+
+                if (raf.read() == '\n') {
+                    count++;
+                }
+
+                if (count == rowsNumber) {
+                    break;
+                }
+            }
+
+            if (pointer >= 0) {
+                raf.seek(pointer);
+            }
+
+            byte[] resultData = new byte[(int) (raf.length() - raf.getFilePointer())];
+            raf.read(resultData);
+            return new String(resultData, StandardCharsets.UTF_8);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
 }

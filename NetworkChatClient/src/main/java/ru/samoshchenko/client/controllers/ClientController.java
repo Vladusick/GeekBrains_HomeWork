@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ClientController {
+    private static final int LAST_HISTORY_ROWS_MUMBER = 100;
 
     @FXML
     private TextArea textArea;
@@ -101,6 +102,7 @@ public class ClientController {
             public void processReceivedCommand(Command command) {
                 if (chatHistoryService == null) {
                     createChatHistory();
+                    loadChatHistory();
                 }
                 if (command.getType() == CommandType.CLIENT_MESSAGE) {
                     ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
@@ -121,7 +123,13 @@ public class ClientController {
     public void close(ActionEvent actionEvent) {
         chatHistoryService.close();
         ClientChat.INSTANCE.getChatStage().close();
+    }
 
+    private void loadChatHistory() {
+        String rows = chatHistoryService.loadLastRows(LAST_HISTORY_ROWS_MUMBER);
+      //  String rows = chatHistoryService.loadLastRows2(LAST_HISTORY_ROWS_MUMBER);
+        textArea.clear();
+        textArea.setText(rows);
     }
 }
 
