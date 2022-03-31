@@ -27,7 +27,7 @@ public class ClientHandler {
         outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
         inputStream = new ObjectInputStream(clientSocket.getInputStream());
 
-        new Thread(() -> {
+        server.getExecutorService().execute(() -> {
             try {
                 authenticate();
                 readMessages();
@@ -41,7 +41,7 @@ public class ClientHandler {
                     System.out.println("Failed to close connection");
                 }
             }
-        }).start();
+        });
     }
 
     private void authenticate() throws IOException {
