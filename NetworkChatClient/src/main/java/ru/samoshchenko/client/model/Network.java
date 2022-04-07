@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Network {
 
@@ -21,8 +23,10 @@ public class Network {
     private ObjectOutputStream socketOutput;
 
     private static Network INSTANCE;
-    private Thread readMessageProcess;
+    private String currentUserName;
+
     private boolean connected;
+    private ExecutorService executorService;
 
     public static Network getInstance() {
         if (INSTANCE == null) {
@@ -34,6 +38,7 @@ public class Network {
     private Network(int port, String host) {
         this.port = port;
         this.host = host;
+        this.executorService = Executors.newSingleThreadExecutor();
     }
 
     private Network() {
@@ -45,7 +50,7 @@ public class Network {
             this.socket = new Socket(this.host, this.port);
             this.socketInput = new ObjectInputStream(socket.getInputStream());
             this.socketOutput = new ObjectOutputStream(socket.getOutputStream());
-            readMessageProcess = startReadMessageProcess();
+            startReadMessageProcess();
             connected = true;
             return true;
         } catch (IOException e) {
@@ -76,8 +81,8 @@ public class Network {
         sendCommand(Command.privateMessageCommand(recipient, message));
     }
 
-    public Thread startReadMessageProcess() {
-        Thread thread = new Thread(() -> {
+    public void startReadMessageProcess() {
+        executorService.execute(() -> {
             while (true) {
                 try {
                     if (Thread.currentThread().isInterrupted()) {
@@ -97,9 +102,6 @@ public class Network {
                 }
             }
         });
-        thread.setDaemon(true);
-        thread.start();
-        return thread;
     }
 
     private Command readCommand() throws IOException {
@@ -127,11 +129,19 @@ public class Network {
     public void close() {
         try {
             connected = false;
-            readMessageProcess.interrupt();
+            executorService.shutdownNow();
             this.socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getCurrentUserName() {
+        return currentUserName;
+    }
+
+    public void setCurrentUserName(String currentUserName) {
+        this.currentUserName = currentUserName;
     }
 
     public boolean isConnected() {
