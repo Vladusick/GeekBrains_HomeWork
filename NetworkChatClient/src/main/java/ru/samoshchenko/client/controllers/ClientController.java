@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import ru.samoshchenko.client.ChatHistory;
 import ru.samoshchenko.client.ClientChat;
 import ru.samoshchenko.client.model.Network;
 import ru.samoshchenko.client.model.ReadCommandListener;
@@ -12,12 +13,14 @@ import ru.samoshchenko.clientserver.CommandType;
 import ru.samoshchenko.clientserver.commands.ClientMessageCommandData;
 import ru.samoshchenko.clientserver.commands.UpdateUserListCommandData;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
 public class ClientController {
+    private static final int LAST_HISTORY_ROWS_MUMBER = 100;
 
     @FXML
     private TextArea textArea;
@@ -29,6 +32,12 @@ public class ClientController {
     public ListView<String> userList;
 
     private ClientChat application;
+    private ChatHistory chatHistoryService;
+
+    public void createChatHistory() {
+        this.chatHistoryService = new ChatHistory(Network.getInstance().getCurrentUserName());
+        chatHistoryService.init();
+    }
 
     public void sendMessage() {
         String message = textField.getText().trim();
@@ -60,6 +69,9 @@ public class ClientController {
     }
 
     private void appendMessageToChat(String sender, String  message) {
+        String currentText = textArea.getText();
+
+
         textArea.appendText(DateFormat.getDateInstance().format(new Date()));
         textArea.appendText(System.lineSeparator());
 
@@ -74,6 +86,9 @@ public class ClientController {
         textField.setFocusTraversable(true);
         textField.clear();
 
+        String newMessage = textArea.getText(currentText.length(), textArea.getLength());
+        chatHistoryService.appendText(newMessage);
+
     }
 
 
@@ -85,6 +100,10 @@ public class ClientController {
         Network.getInstance().addReadMessageListener(new ReadCommandListener() {
             @Override
             public void processReceivedCommand(Command command) {
+                if (chatHistoryService == null) {
+                    createChatHistory();
+                    loadChatHistory();
+                }
                 if (command.getType() == CommandType.CLIENT_MESSAGE) {
                     ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
                     appendMessageToChat(data.getSender(), data.getMessage());
@@ -99,6 +118,18 @@ public class ClientController {
                 }
             }
         });
+    }
+
+    public void close(ActionEvent actionEvent) {
+        chatHistoryService.close();
+        ClientChat.INSTANCE.getChatStage().close();
+    }
+
+    private void loadChatHistory() {
+        String rows = chatHistoryService.loadLastRows(LAST_HISTORY_ROWS_MUMBER);
+      //  String rows = chatHistoryService.loadLastRows2(LAST_HISTORY_ROWS_MUMBER);
+        textArea.clear();
+        textArea.setText(rows);
     }
 }
 
