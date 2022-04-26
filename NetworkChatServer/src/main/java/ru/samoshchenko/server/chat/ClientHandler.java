@@ -1,5 +1,7 @@
 package ru.samoshchenko.server.chat;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.samoshchenko.clientserver.Command;
 import ru.samoshchenko.clientserver.CommandType;
 import ru.samoshchenko.clientserver.commands.AuthCommandData;
@@ -15,6 +17,7 @@ public class ClientHandler {
     private final Socket clientSocket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+    private static final Logger log = LogManager.getLogger(ClientHandler.class);
 
     private String username;
 
@@ -27,21 +30,23 @@ public class ClientHandler {
         outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
         inputStream = new ObjectInputStream(clientSocket.getInputStream());
 
-        new Thread(() -> {
+        server.getExecutorService().execute(() -> {
             try {
                 authenticate();
                 readMessages();
             } catch (IOException e) {
                 System.err.println("Failed to process message from client ");
+                log.info("Failed to process message from client ");
                 e.printStackTrace();
             } finally {
                 try {
                     closeConnection();
                 } catch (IOException e) {
                     System.out.println("Failed to close connection");
+                    log.info("Failed to close connection");
                 }
             }
-        }).start();
+        });
     }
 
     private void authenticate() throws IOException {
@@ -60,8 +65,10 @@ public class ClientHandler {
 
                 if (userName == null) {
                     sendCommand(Command.errorCommand("Некорректный логин и пароль"));
+                    log.info("Некорректный логин и пароль");
                 } else if (server.isUsernameBusy(userName)) {
                     sendCommand(Command.errorCommand("Такой пользователь уже существует"));
+                    log.info("Такой пользователь уже существует");
                 } else {
                     this.username = userName;
                     sendCommand(Command.authOkCommand(userName));
@@ -81,7 +88,8 @@ public class ClientHandler {
         try {
             command = (Command) inputStream.readObject();
         } catch (ClassNotFoundException e) {
-            System.err.println("Failed to read command class");
+         //   System.err.println("Failed to read command class");
+            log.info("Failed to read command class");
             e.printStackTrace();
         }
         return command;
