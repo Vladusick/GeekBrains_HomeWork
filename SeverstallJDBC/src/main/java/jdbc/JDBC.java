@@ -1,34 +1,27 @@
 package jdbc;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class JDBC {
 
     public static final String DB_URL = "jdbc:sqlite:C:/Users/Vladislav/IdeaProjects/GeekBrains_HomeWork/notes";
-
-    public static void main(String[] args) {
-        JDBC jdbc = new JDBC();
-    }
 
     public void printAllNotes() {
 
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
             Statement statement = connection.createStatement();
 
-            //удалене данных
-            // statement.executeUpdate("delete from notes where id = 3");
-
-            //добавление данных
-            //  statement.executeUpdate("insert into notes (title, text) values ('Купить хлеб', 'в магазине магнит булку белого')");
-
-            //вывод данных
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM notes");
+            ResultSet resultSet = statement.executeQuery("SELECT id, title, text FROM notes");
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String title = resultSet.getString("title");
                 String text = resultSet.getString("text");
-                System.out.printf("Номер заметки: %d%n Заголок заметки: %s%n Текст заметки: %s%n - - - %n", id, title, text);
+                System.out.printf("Номер заметки: %d%n Заголовок заметки: %s%n Текст заметки: %s%n - - - %n", id, title, text);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,18 +57,22 @@ public class JDBC {
         }
     }
 
-    // работает криво если нет записи все равно убдет писать что запись удалена
-    public void deleteNoteByTitle(String title) {
+    public String deleteNoteByTitle(String title) {
+        String outgoingMessage = null;
 
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
             Statement statement = connection.createStatement();
 
             String sql = String.format("DELETE FROM notes WHERE title = '%s'", title);
-            statement.executeUpdate(sql);
+            int deleteСheck = statement.executeUpdate(sql);
+            if (deleteСheck == 0) {
+                outgoingMessage = "Заметка с таким заголовком не найдена";
+            } else outgoingMessage = "Заметка удалена";
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return outgoingMessage;
     }
 
     public void openNoteByTitle(String titleValue) {
@@ -87,6 +84,9 @@ public class JDBC {
             statement.executeQuery(sql);
 
             ResultSet resultSet = statement.executeQuery(sql);
+            if (!resultSet.isBeforeFirst()) {
+                System.out.println("Заметка с таким заголовком не найдена");
+            }
 
             while (resultSet.next()) {
                 String text = resultSet.getString("text");
@@ -97,31 +97,39 @@ public class JDBC {
         }
     }
 
+    // этот метод в процессе
     public void editNoteByTitle(String oldTitle, String newTitle, String text) {
 
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
             Statement statement = connection.createStatement();
 
             String sql = String.format("UPDATE notes SET title = '%s', text = '%s' WHERE title = '%s';", newTitle, text, oldTitle);
-            statement.executeUpdate(sql);
-            System.out.println("Заметка изменена");
+            int checkQuery = statement.executeUpdate(sql);
+            if (checkQuery == 0) {
+                System.out.println("Заметка с таким заголовком не найдена");
+            } else System.out.println("Заметка изменена");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public boolean checkQueryByTitle(String title) {
+
+        boolean result = false;
+        try (Connection connection = DriverManager.getConnection(DB_URL)) {
+            Statement statement = connection.createStatement();
+
+            String sql = String.format("SELECT title FROM notes WHERE title = '%s'", title);
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            if (!resultSet.isBeforeFirst()) {
+                result = false;
+            } else result = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }
-
-
-//   UPDATE notes SET title = 'privet', text = 'update' WHERE title = 'Дядя тольда';
-
-//удалене данных
-// statement.executeUpdate("delete from notes where id = 3");
-
-//добавление данных
-//  statement.executeUpdate("insert into notes (title, text) values ('Купить хлеб', 'в магазине магнит булку белого')");
-
-//вывод данных
-
 

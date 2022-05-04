@@ -1,27 +1,41 @@
 package jdbc;
 
-import java.util.ArrayList;
-import java.util.List;
+public enum Commands {
 
-public class Commands {
 
-   public void printCommands() {
-       List<String> commands = new ArrayList<>();
+    START_MSG("Вас приветствует консольное приложение - СПИСОК ЗАМЕТОК"),
+    START_MSG_HELP("Чтобы получить список всех команд, введите - Help"),
+    START_MSG_NEW("Чтобы создать новую заметку, введите - New "),
+    START_MSG_LIST("Чтобы вывести список заметок, введите - List "),
 
-       commands.add("Список команд: ");
-       commands.add("New - создать новую заметку");
-       commands.add("List - вывести список заметок");
-       commands.add("All - вывести все заметки");
-       commands.add("Open - открыть заметку");
-       commands.add("Del - удалить заметку");
-       commands.add("Edit - редактировать заметку");
-       commands.add("End - завершить работу приложения");
-       commands.add("Help - получить список команд");
+    LIST_OF_COMMANDS("Список команд: "),
+    NEW("New - создать новую заметку"),
+    LIST("List - вывести список заметок"),
+    ALL("All - вывести все заметки"),
+    OPEN("Open - открыть заметку"),
+    DEL("Del - удалить заметку"),
+    EDIT("Edit - редактировать заметку"),
+    END("End - завершить работу приложения"),
+    HELP("Help - получить список команд"),
 
-       for (String command : commands) {
-           System.out.println(command);
-       }
-   }
+    APP_OFF_MSG("Работа приложения завершена"),
+    NEW_NOTE_TITLE_MSG("Введите заголовок новой заметки: "),
+    NEW_NOTE_TEXT_MSG("Введите текст новой заметки: "),
+    NOTE_SAVED_MSG("Заметка сохранена"),
+    DEL_MSG("Введите заголовок заметки, которую нужно удалить: ");
+
+
+
+
+    private String text;
+
+    public String getText() {
+        return text;
+    }
+
+    Commands(String text) {
+        this.text = text;
+
+
+    }
 }
-
-
