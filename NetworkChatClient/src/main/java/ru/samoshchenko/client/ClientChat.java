@@ -108,5 +108,4 @@ public class ClientChat extends Application {
         return this.primaryStage;
     }
 
-
 }
