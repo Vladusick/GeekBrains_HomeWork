@@ -46,25 +46,25 @@ public class Application {
                 }
 
                 case "List" -> {
-                    System.out.println("Список заметок: ");
+                    System.out.println(Commands.LIST_OF_NOTES_MSG.getText());
                     jdbc.printList();
                 }
 
                 case "Open" -> {
-                    System.out.println("Введите заголовок заметки, которую хотите открыть: ");
+                    System.out.println(Commands.OPEN_TITLE_MSG.getText());
                     jdbc.openNoteByTitle(queryInputScanner.nextLine());
                 }
 
                 case "Edit" -> {
-                    System.out.println("Введите заголовок заметки, которую хотите отредактировать: ");
+                    System.out.println(Commands.EDIT_TITLE_MSG.getText());
                     String oldTitle = queryInputScanner.nextLine();
                     if (jdbc.checkQueryByTitle(oldTitle)) {
-                        System.out.println("Введите новый заголовок: ");
+                        System.out.println(Commands.NEW_TITLE_MSG.getText());
                         String newTitle = queryInputScanner.nextLine();
-                        System.out.println("Введите новый текст: ");
+                        System.out.println(Commands.NEW_TEXT_MSG.getText());
                         String text = queryInputScanner.nextLine();
                         jdbc.editNoteByTitle(oldTitle, newTitle, text);
-                    } else System.out.println("Заметка с таким заголовком не найдена");
+                    } else System.out.println(Commands.NOTE_NOT_FOUND_MSG.getText());
                 }
 
                 case "Help" -> {
@@ -72,63 +72,8 @@ public class Application {
                 }
 
                 default -> {
-                    System.out.println("Такой команды не существует. Чтобы получить список команд введите - Help");
+                    System.out.println(Commands.COMMAND_NOT_FOUND_MSG.getText());
                 }
-
-                /*
-            }
-            if (message.equalsIgnoreCase("End")) {
-                System.out.println("Приложение завершило работу");
-                break;
-            }
-            if (message.equalsIgnoreCase("New")) {
-                Scanner localScanner = new Scanner(System.in);
-                System.out.println("Введите заголок новой заметки: ");
-                String title = localScanner.nextLine();
-                System.out.println("Введите текст новой заметки: ");
-                String text = localScanner.nextLine();
-                jdbc.createNote(title, text);
-                System.out.println("Заметка сохранена");
-            }
-
-            if (message.equalsIgnoreCase("Del")) {
-                Scanner localScanner = new Scanner(System.in);
-                System.out.println("Введите заголовок заметки, которую нужно удалить: ");
-                jdbc.deleteNoteByTitle(localScanner.nextLine());
-                System.out.println("Запись с заголовком удалена");
-            }
-
-            if (message.equalsIgnoreCase("All")) {
-                jdbc.printAllNotes();
-            }
-
-            if (message.equalsIgnoreCase("List")) {
-                System.out.println("Список заметок: ");
-                jdbc.printList();
-            }
-
-            if (message.equalsIgnoreCase("Open")) {
-                Scanner localScanner = new Scanner(System.in);
-                System.out.println("Введите заголовок заметки, которую хотите открыть: ");
-                jdbc.openNoteByTitle(localScanner.nextLine());
-            }
-
-            if (message.equalsIgnoreCase("Edit")) {
-                Scanner localScanner = new Scanner(System.in);
-                System.out.println("Введите заголовок заметки, которую хотите отредактировать: ");
-                String oldTitle = localScanner.nextLine();
-                System.out.println("Введите новый заголовок: ");
-                String newTitle = localScanner.nextLine();
-                System.out.println("Введите новый текст: ");
-                String text = localScanner.nextLine();
-                jdbc.editNoteByTitle(oldTitle, newTitle, text);
-            }
-
-            if (message.equalsIgnoreCase("Help")) {
-                commandService.printCommands();
-
-
-                 */
             }
         }
     }

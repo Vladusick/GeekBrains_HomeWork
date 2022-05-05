@@ -66,8 +66,8 @@ public class JDBC {
             String sql = String.format("DELETE FROM notes WHERE title = '%s'", title);
             int deleteСheck = statement.executeUpdate(sql);
             if (deleteСheck == 0) {
-                outgoingMessage = "Заметка с таким заголовком не найдена";
-            } else outgoingMessage = "Заметка удалена";
+                outgoingMessage = Commands.NOTE_NOT_FOUND_MSG.getText();
+            } else outgoingMessage = Commands.NOTE_DELETED_MSG.getText();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,7 +85,7 @@ public class JDBC {
 
             ResultSet resultSet = statement.executeQuery(sql);
             if (!resultSet.isBeforeFirst()) {
-                System.out.println("Заметка с таким заголовком не найдена");
+                System.out.println(Commands.NOTE_NOT_FOUND_MSG.getText());
             }
 
             while (resultSet.next()) {
@@ -97,7 +97,6 @@ public class JDBC {
         }
     }
 
-    // этот метод в процессе
     public void editNoteByTitle(String oldTitle, String newTitle, String text) {
 
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
@@ -106,8 +105,8 @@ public class JDBC {
             String sql = String.format("UPDATE notes SET title = '%s', text = '%s' WHERE title = '%s';", newTitle, text, oldTitle);
             int checkQuery = statement.executeUpdate(sql);
             if (checkQuery == 0) {
-                System.out.println("Заметка с таким заголовком не найдена");
-            } else System.out.println("Заметка изменена");
+                System.out.println(Commands.NOTE_NOT_FOUND_MSG.getText());
+            } else System.out.println(Commands.NOTE_CHANGE_MSG.getText());
 
         } catch (SQLException e) {
             e.printStackTrace();
